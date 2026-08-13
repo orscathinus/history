@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0b0d" />
+  <meta name="description" content="The History of the World — an interactive digital museum spanning prehistory to space exploration." />
+  <title>The History of the World — Interactive Museum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <header class="topbar" id="topbar">
+    <a class="brand" href="#home" aria-label="The History of the World home">
+      <span class="brand-mark" aria-hidden="true">H</span>
+      <span><strong>History</strong><small>of the World</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="#timeline">Timeline</a>
+      <a href="#sectors">Sectors</a>
+      <a href="#exhibits">Exhibits</a>
+      <a href="#explore">Explore All</a>
+    </nav>
+    <div class="topbar-actions">
+      <button class="icon-button" id="searchButton" aria-label="Open search" title="Search museum"><span>⌕</span><span class="shortcut">/</span></button>
+      <button class="icon-button menu-button" id="menuButton" aria-label="Open navigation" aria-expanded="false">☰</button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="#timeline">Timeline</a>
+    <a href="#sectors">Sectors</a>
+    <a href="#exhibits">Exhibits</a>
+    <a href="#explore">Explore All</a>
+  </div>
+
+  <main id="main">
+    <section class="hero" id="home" aria-labelledby="heroTitle">
+      <div class="hero-sky" aria-hidden="true">
+        <div class="orb orb-one"></div>
+        <div class="orb orb-two"></div>
+        <div class="hero-grid"></div>
+      </div>
+      <div class="hero-archive" aria-hidden="true">
+        <figure class="archive-tile tile-a"><img alt="" src="https://commons.wikimedia.org/wiki/Special:FilePath/G%C3%B6beklitepe%202015-27.jpg" /></figure>
+        <figure class="archive-tile tile-b"><img alt="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Great%20Pyramid%20(Pyramid%20of%20Cheops%20Khufu),%20Giza,%20GG,%20EGY%20(47902782131).jpg" /></figure>
+        <figure class="archive-tile tile-c"><img alt="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Colosseum-Rom.jpg" /></figure>
+        <figure class="archive-tile tile-d"><img alt="" src="https://commons.wikimedia.org/wiki/Special:FilePath/Into%20the%20Jaws%20of%20Death%20(6414569).jpg" /></figure>
+        <figure class="archive-tile tile-e"><img alt="" src="https://commons.wikimedia.org/wiki/Special:FilePath/AS11-40-5903%20-%20Buzz%20Aldrin%20by%20Neil%20Armstrong%20(full%20frame).jpg" /></figure>
+      </div>
+      <div class="hero-content reveal">
+        <p class="eyebrow">An interactive museum · Version 1.0.0</p>
+        <h1 id="heroTitle"><span>The History</span><span>of the World</span></h1>
+        <p class="hero-lede">From stone tools to moon dust: enter a growing museum of people, ideas, empires, inventions, conflict, and discovery.</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#sectors">Enter the museum <span>→</span></a>
+          <button class="text-button" id="randomExhibit">Surprise me <span>↗</span></button>
+        </div>
+      </div>
+      <div class="hero-caption" aria-hidden="true">
+        <span>c. 300,000 BCE</span><i></i><span>2026 CE</span>
+      </div>
+      <a class="scroll-cue" href="#timeline" aria-label="Scroll to timeline"><span></span>Scroll through time</a>
+    </section>
+
+    <section class="timeline-section museum-section" id="timeline" aria-labelledby="timelineTitle">
+      <div class="section-heading reveal">
+        <div><p class="eyebrow">The long view</p><h2 id="timelineTitle">A timeline of us.</h2></div>
+        <p>Move across eras, then open a sector to step inside. Dates are broad guideposts: history rarely changes on a single day.</p>
+      </div>
+      <div class="timeline-shell reveal">
+        <div class="timeline-track" id="timelineTrack" role="list" aria-label="Historical eras"></div>
+      </div>
+      <div class="year-machine reveal" aria-label="Explore history by year">
+        <div>
+          <p class="eyebrow">Time machine</p>
+          <h3 id="yearDisplay">1969 CE</h3>
+          <p id="yearContext">Humans first walk on the Moon while the Cold War reshapes science, politics, and culture.</p>
+        </div>
+        <div class="year-control">
+          <input id="yearSlider" type="range" min="-10000" max="2026" value="1969" step="1" aria-label="Select a year from 10,000 BCE to 2026 CE" />
+          <div class="year-labels"><span>10,000 BCE</span><span>0</span><span>2026</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectors-section museum-section" id="sectors" aria-labelledby="sectorsTitle">
+      <div class="section-heading reveal">
+        <div><p class="eyebrow">Museum wings</p><h2 id="sectorsTitle">Eleven ways into history.</h2></div>
+        <p>Each wing has its own atmosphere. Version 1.0.0 opens the doors; future releases will keep filling the galleries.</p>
+      </div>
+      <div class="sector-grid" id="sectorGrid"></div>
+    </section>
+
+    <section class="feature-exhibit" id="feature" aria-labelledby="featureTitle">
+      <div class="feature-media">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/AS11-40-5903%20-%20Buzz%20Aldrin%20by%20Neil%20Armstrong%20(full%20frame).jpg" alt="Buzz Aldrin standing on the Moon during Apollo 11" loading="lazy" />
+        <div class="feature-overlay"></div>
+        <span class="image-credit">NASA · Apollo 11 · Public domain</span>
+      </div>
+      <div class="feature-copy reveal">
+        <p class="eyebrow">Featured gallery · Space Exploration</p>
+        <h2 id="featureTitle">One small world becomes two.</h2>
+        <p class="feature-date">20 July 1969</p>
+        <p>When Apollo 11 landed in Mare Tranquillitatis, a journey that began with early rocketry reached another world. Explore the mission as engineering, geopolitics, human risk, and a new chapter in the history of exploration.</p>
+        <button class="primary-button exhibit-open" data-exhibit="apollo-11">Enter Apollo 11 <span>→</span></button>
+      </div>
+    </section>
+
+    <section class="exhibits-section museum-section" id="exhibits" aria-labelledby="exhibitsTitle">
+      <div class="section-heading reveal">
+        <div><p class="eyebrow">Now showing</p><h2 id="exhibitsTitle">Nine opening exhibits.</h2></div>
+        <div class="filter-chips" id="exhibitFilters" aria-label="Filter exhibits"></div>
+      </div>
+      <div class="exhibit-grid" id="exhibitGrid"></div>
+    </section>
+
+    <section class="interact-section museum-section" aria-labelledby="interactTitle">
+      <div class="section-heading reveal">
+        <div><p class="eyebrow">Interactive gallery</p><h2 id="interactTitle">Humanity on the move.</h2></div>
+        <p>A stylized migration map follows major stages in the dispersal of Homo sapiens. Select a route to illuminate it.</p>
+      </div>
+      <div class="migration-card reveal">
+        <div class="migration-map" id="migrationMap">
+          <svg viewBox="0 0 1000 520" role="img" aria-label="Stylized world map showing major human migration routes">
+            <defs>
+              <filter id="glow"><feGaussianBlur stdDeviation="4" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <path class="land" d="M78 161l55-65 86-16 66 34 77 2 21 40-58 44-52 66-58 3-28 43-62-18-17-64-55-17zM402 143l83-55 100 11 32 43 55 15 54-25 80 30 89 68-22 46-102-2-66 41-60-23-55 31-78-21-38-62-69-33zM545 337l48-9 45 35 17 77-42 54-55-19-19-66zM797 380l69-9 58 41-37 40-78-5z" />
+            <path class="route route-africa active" data-route="africa" d="M556 328 C520 285 505 252 526 215" />
+            <path class="route route-eurasia" data-route="eurasia" d="M526 215 C570 173 640 168 694 180 S787 198 822 176" />
+            <path class="route route-australia" data-route="australia" d="M694 180 C746 225 792 292 837 393" />
+            <path class="route route-americas" data-route="americas" d="M822 176 C915 144 948 116 927 88 M927 88 C878 100 830 114 224 132 M224 132 C181 197 151 255 143 318" />
+            <circle class="origin-dot" cx="526" cy="215" r="8" />
+          </svg>
+          <div class="map-note"><span></span>Approximate routes, not precise borders or single migrations.</div>
+        </div>
+        <div class="migration-controls" id="migrationControls">
+          <button class="migration-option active" data-route="africa"><strong>Africa</strong><span>Origins & regional dispersal</span></button>
+          <button class="migration-option" data-route="eurasia"><strong>Eurasia</strong><span>c. 70,000–45,000 years ago</span></button>
+          <button class="migration-option" data-route="australia"><strong>Sahul</strong><span>By at least c. 50,000 years ago</span></button>
+          <button class="migration-option" data-route="americas"><strong>Americas</strong><span>By at least c. 15,000 years ago</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="explore-section museum-section" id="explore" aria-labelledby="exploreTitle">
+      <div class="section-heading reveal">
+        <div><p class="eyebrow">Museum directory</p><h2 id="exploreTitle">Explore all.</h2></div>
+        <div class="directory-search"><label for="directorySearch" class="sr-only">Filter museum directory</label><input id="directorySearch" type="search" placeholder="Filter people, eras, places…" /></div>
+      </div>
+      <div class="directory" id="directoryList"></div>
+    </section>
+
+    <section class="closing-section">
+      <div class="closing-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="closing-copy reveal">
+        <p class="eyebrow">The museum is just opening</p>
+        <h2>History has no final room.</h2>
+        <p>Version 1.0.0 is the foundation. New civilizations, artifacts, people, maps, wars, discoveries, and connections can be added without rebuilding the museum.</p>
+        <a class="primary-button light" href="#home">Return to the beginning <span>↑</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-brand"><span class="brand-mark">H</span><div><strong>The History of the World</strong><small>Interactive Museum · v1.0.0</small></div></div>
+    <p>Historical images are individually credited in their exhibits. Many are public-domain or freely licensed works from Wikimedia Commons and NASA.</p>
+    <a href="#home">Back to top ↑</a>
+  </footer>
+
+  <dialog class="search-dialog" id="searchDialog" aria-labelledby="searchTitle">
+    <div class="dialog-top">
+      <div><p class="eyebrow">Search the museum</p><h2 id="searchTitle">Where do you want to go?</h2></div>
+      <button class="dialog-close" id="searchClose" aria-label="Close search">×</button>
+    </div>
+    <label class="search-field"><span>⌕</span><input id="globalSearch" type="search" autocomplete="off" placeholder="Try “Rome”, “Apollo”, “Mongol”…" /></label>
+    <div class="search-results" id="searchResults"></div>
+  </dialog>
+
+  <dialog class="exhibit-dialog" id="exhibitDialog" aria-labelledby="exhibitDialogTitle">
+    <button class="dialog-close exhibit-close" id="exhibitClose" aria-label="Close exhibit">×</button>
+    <div id="exhibitDialogContent"></div>
+  </dialog>
+
+  <dialog class="sector-dialog" id="sectorDialog" aria-labelledby="sectorDialogTitle">
+    <button class="dialog-close sector-close" id="sectorClose" aria-label="Close sector">×</button>
+    <div id="sectorDialogContent"></div>
+  </dialog>
+
+  <noscript><div class="noscript">This museum uses JavaScript for search, filters, timelines, and interactive exhibits. Please enable JavaScript for the full experience.</div></noscript>
+  <script src="app.js"></script>
+</body>
+</html>
