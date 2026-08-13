@@ -11,3 +11,5 @@ Highlights include richer sector landing pages, interactive exhibit timelines an
 Version 1.1.2 fixes the dedicated exhibit renderer, adds a validation workflow, and cache-busts exhibit assets so corrected gallery JavaScript is fetched immediately.
 
 The site remains dependency-free and data-driven: `data.js` holds the collection, while `exhibit.js` and `sector.js` render reusable dedicated pages.
+
+Deployment note: v1.1.2 gallery assets were rebuilt after renderer validation passed.
