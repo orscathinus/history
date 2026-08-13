@@ -1,20 +1,263 @@
-const {sectors,exhibits}=window.HISTORY_DATA;const $=(q,r=document)=>r.querySelector(q),$$=(q,r=document)=>[...r.querySelectorAll(q)];const id=document.body.dataset.exhibit,e=exhibits.find(x=>x.id===id),sec=e&&sectors.find(s=>s.id===e.sector);if(!e){document.body.innerHTML='<main style="padding:4rem;color:white;font-family:system-ui"><h1>Exhibit not found</h1><a href="../../">Return to museum</a></main>';throw new Error('Unknown exhibit '+id)}
-document.title=`${e.title} · The History of the World`;document.documentElement.style.setProperty('--accent',sec.accent);document.documentElement.style.setProperty('--a',sec.a);document.documentElement.style.setProperty('--b',sec.b);document.body.classList.add('layout-'+e.interactive);
-const link=x=>`../${x.id}/`;const fmt=(i,n=2)=>String(i+1).padStart(n,'0');
-function nav(){return `<div class="grain"></div><div class="scroll-progress" id="scrollProgress"></div><header class="museum-nav" id="museumNav"><a class="nav-brand" href="../../"><span class="brand-mark">H</span><span>History of the World</span></a><nav class="nav-links"><a href="../../#timeline">Timeline</a><a href="../../#explore">Explore All</a><button class="nav-random" id="randomGallery">Random gallery ↗</button></nav></header>`}
-function schematic(){
- if(e.interactive==='machine'){return `<div class="machine-slider"><span class="kicker">System evolution</span><div class="machine-stage" id="machineStage">${e.timeline[0][1]}</div><input id="machineRange" type="range" min="0" max="${e.timeline.length-1}" value="0" step="1"><p id="machineText">${e.timeline[0][0]} — select a stage to move through the system.</p></div>`}
- if(e.interactive==='mission'){return `<div class="schematic"><svg viewBox="0 0 900 650" aria-hidden="true"><circle cx="450" cy="325" r="70" fill="none" stroke="rgba(255,255,255,.2)"/><ellipse cx="450" cy="325" rx="220" ry="120" fill="none" stroke="rgba(255,255,255,.14)"/><ellipse cx="450" cy="325" rx="360" ry="220" fill="none" stroke="rgba(255,255,255,.1)"/><path class="route" d="M110 440 C250 380 290 250 450 325 S690 190 815 120"/><circle class="node" cx="110" cy="440" r="8"/><circle class="node" cx="450" cy="325" r="8"/><circle class="node" cx="815" cy="120" r="8"/></svg></div>`}
- if(['migration','expansion','map','network'].includes(e.interactive)){return `<div class="schematic"><svg viewBox="0 0 900 650" aria-hidden="true"><path d="M80 240l80-95 130-20 92 66-45 95-112 20-25 100-100-22zM390 166l112-82 155 35 65 65 112 37-20 100-105-6-75 83-130-25-76-90zM565 420l73-22 62 60-15 105-87 10-50-74z" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.15)"/><path class="route" d="M500 360 C465 310 440 270 475 235 S570 176 640 206 S735 258 795 208"/><path class="route" style="opacity:.55" d="M475 235 C390 205 310 190 235 225 S150 300 120 355"/><circle class="node" cx="475" cy="235" r="8"/><circle class="node" cx="795" cy="208" r="8"/><circle class="node" cx="120" cy="355" r="8"/></svg></div>`}
- return `<div class="schematic"><svg viewBox="0 0 900 650" aria-hidden="true"><circle cx="450" cy="325" r="165" fill="none" stroke="rgba(255,255,255,.12)"/><circle cx="450" cy="325" r="260" fill="none" stroke="rgba(255,255,255,.08)"/><path class="route" d="M210 430 C310 270 380 425 450 325 S610 230 710 365"/><circle class="node" cx="210" cy="430" r="8"/><circle class="node" cx="450" cy="325" r="8"/><circle class="node" cx="710" cy="365" r="8"/></svg></div>`}
+const { sectors, exhibits } = window.HISTORY_DATA;
+const $ = (q, root = document) => root.querySelector(q);
+const $$ = (q, root = document) => [...root.querySelectorAll(q)];
+const BASE = '/history/';
+
+const id = document.body.dataset.exhibit;
+const e = exhibits.find((x) => x.id === id);
+const sec = e && sectors.find((s) => s.id === e.sector);
+
+if (!e || !sec) {
+  document.body.innerHTML = `
+    <main style="min-height:100vh;display:grid;place-items:center;padding:3rem;background:#08090d;color:white;font-family:system-ui;text-align:center">
+      <div>
+        <p style="color:#efbd69;letter-spacing:.16em;text-transform:uppercase">Museum directory</p>
+        <h1 style="font-family:Georgia,serif;font-size:clamp(3rem,8vw,6rem);margin:.5rem 0">Exhibit not found</h1>
+        <a style="color:#efbd69" href="${BASE}">Return to museum →</a>
+      </div>
+    </main>`;
+  throw new Error(`Unknown exhibit ${id}`);
 }
-function build(){const related=e.related.map(id=>exhibits.find(x=>x.id===id)).filter(Boolean);const archive=[e,...related,...exhibits.filter(x=>x.sector===e.sector&&x.id!==e.id&&!e.related.includes(x.id))].slice(0,5);document.body.innerHTML=nav()+`<main>
-<section class="exhibit-hero"><div class="hero-image"><img src="${e.image}" alt="${e.title}"><a class="hero-credit" href="${e.source}" target="_blank" rel="noopener">Image: ${e.credit} · source ↗</a></div><div class="hero-content"><div class="breadcrumbs"><a href="../../">Museum</a><i></i><a href="../../sectors/${sec.id}/">${sec.name}</a><i></i><span>${e.title}</span></div><p class="kicker">${sec.name} · Dedicated gallery</p><h1>${e.title}</h1><p class="hero-deck">${e.intro}</p><div class="hero-meta"><span><strong>${e.date}</strong> · Date</span><span><strong>${e.region}</strong> · Region</span><span><strong>${e.sections.length}</strong> · Story rooms</span></div></div><a class="hero-scroll" href="#overview">Enter exhibit ↓</a></section>
-<div class="exhibit-body"><section class="overview-grid" id="overview"><div class="overview-copy"><p class="eyebrow">Orientation</p><h2>Before you enter.</h2><p>${e.intro}</p><p>${e.sections[0][1]}</p></div><aside class="fact-rail">${e.facts.map(([a,b])=>`<div class="fact"><span>${a}</span><strong>${b}</strong></div>`).join('')}</aside></section>
-<section class="chapter-section"><div class="section-head"><div><p class="eyebrow">Deep dive</p><h2>The story in layers.</h2></div><p>Move through political systems, material life, technology, conflict, culture, and consequences rather than reducing this subject to a single date.</p></div><div class="chapter-grid">${e.sections.map((s,i)=>`<article class="chapter"><span class="chapter-number">ROOM ${fmt(i)}</span><h3>${s[0]}</h3><p>${s[1]}</p></article>`).join('')}</div></section>
-<section class="interactive-stage"><div class="interact-copy"><p class="eyebrow">Interactive lens</p><h2>Change the way you look.</h2><p>Select a lens to pull one strand of the exhibit into focus. The graphic is interpretive and schematic—not a literal political map.</p><div class="lens-buttons">${e.sections.slice(0,3).map((s,i)=>`<button class="${i===0?'active':''}" data-lens="${i}">${fmt(i)} · ${s[0]}</button>`).join('')}</div></div><div class="interact-canvas">${schematic()}<article class="lens-panel" id="lensPanel"><span>Lens 01</span><h3>${e.sections[0][0]}</h3><p>${e.sections[0][1]}</p></article></div></section>
-<section class="timeline-room"><p class="kicker">Exhibit timeline</p><h2>Moments that change the room.</h2><div class="exhibit-timeline">${e.timeline.map((t,i)=>`<button class="timeline-stop ${i===0?'active':''}" data-stop="${i}"><time>${t[0]}</time><h3>${t[1]}</h3><p>Open this marker for context.</p></button>`).join('')}</div><div class="timeline-focus"><strong id="timelineFocusDate">${e.timeline[0][0]}</strong><p id="timelineFocusText">${e.timeline[0][1]} — place this moment beside the larger story above rather than treating it as an isolated fact.</p></div></section>
-<section class="visual-archive"><div class="archive-head"><div><p class="eyebrow">Visual archive</p><h2>Objects, places, evidence.</h2></div><p>Images lead into neighboring galleries and their source records. Open an image source for licensing and catalog information.</p></div><div class="archive-grid">${archive.map((a,i)=>`<figure class="archive-item"><a href="${a.id===e.id?a.source:link(a)}" ${a.id===e.id?'target="_blank" rel="noopener"':''}><img src="${a.image}" alt="${a.title}"><figcaption>${a.title} · ${a.credit}</figcaption></a></figure>`).join('')}</div></section>
-<section class="meanwhile"><p class="kicker">Meanwhile in the world</p><h2>No civilization exists alone.</h2><div class="meanwhile-grid">${e.meanwhile.map((m,i)=>`<article class="mean-card"><span>Elsewhere ${fmt(i)}</span><h3>${e.date}</h3><p>${m}</p></article>`).join('')}</div></section>
-<section class="connections"><p class="kicker">Connected galleries</p><h2>Keep walking.</h2><div class="related-grid">${related.map(r=>`<a class="related-card" href="${link(r)}"><img src="${r.image}" alt="${r.title}"><div class="related-copy"><span>${sectors.find(s=>s.id===r.sector).name}</span><h3>${r.title}</h3></div></a>`).join('')}</div><a class="back-wing" href="../../sectors/${sec.id}/"><span>Return to museum wing</span><strong>${sec.name} →</strong></a></section></div></main><footer class="site-footer"><span>The History of the World · v1.1</span><a href="../../">Museum home ↑</a></footer>`;wire()}
-function wire(){const panels=e.sections.slice(0,3);$$('[data-lens]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.lens;$$('[data-lens]').forEach(x=>x.classList.toggle('active',x===b));$('#lensPanel').innerHTML=`<span>Lens ${fmt(i)}</span><h3>${panels[i][0]}</h3><p>${panels[i][1]}</p>`}));$$('[data-stop]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.stop,t=e.timeline[i];$$('[data-stop]').forEach(x=>x.classList.toggle('active',x===b));$('#timelineFocusDate').textContent=t[0];$('#timelineFocusText').textContent=`${t[1]} — this marker sits inside the larger forces explored in the gallery.`}));const range=$('#machineRange');if(range)range.addEventListener('input',()=>{const t=e.timeline[+range.value];$('#machineStage').textContent=t[1];$('#machineText').textContent=`${t[0]} — ${e.sections[Math.min(+range.value,e.sections.length-1)][0]}.`});$('#randomGallery').addEventListener('click',()=>{const r=exhibits[Math.floor(Math.random()*exhibits.length)];location.href=`../${r.id}/`});window.addEventListener('scroll',()=>{const y=scrollY,h=document.documentElement.scrollHeight-innerHeight;$('#scrollProgress').style.width=`${h?y/h*100:0}%`;$('#museumNav').classList.toggle('scrolled',y>30)},{passive:true})}build();
+
+document.title = `${e.title} · The History of the World`;
+document.documentElement.style.setProperty('--accent', sec.accent);
+document.documentElement.style.setProperty('--a', sec.a);
+document.documentElement.style.setProperty('--b', sec.b);
+document.body.classList.add(`layout-${e.interactive}`);
+
+const link = (x) => `${BASE}exhibits/${x.id}/`;
+const fmt = (i, n = 2) => String(i + 1).padStart(n, '0');
+
+function nav() {
+  return `
+    <div class="grain"></div>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <header class="museum-nav" id="museumNav">
+      <a class="nav-brand" href="${BASE}">
+        <span class="brand-mark">H</span>
+        <span>History of the World</span>
+      </a>
+      <nav class="nav-links">
+        <a href="${BASE}#timeline">Timeline</a>
+        <a href="${BASE}#explore">Explore All</a>
+        <button class="nav-random" id="randomGallery">Random gallery ↗</button>
+      </nav>
+    </header>`;
+}
+
+function schematic() {
+  if (e.interactive === 'machine') {
+    return `
+      <div class="machine-slider">
+        <span class="kicker">System evolution</span>
+        <div class="machine-stage" id="machineStage">${e.timeline[0][1]}</div>
+        <input id="machineRange" type="range" min="0" max="${e.timeline.length - 1}" value="0" step="1">
+        <p id="machineText">${e.timeline[0][0]} — select a stage to move through the system.</p>
+      </div>`;
+  }
+
+  if (e.interactive === 'mission') {
+    return `
+      <div class="schematic">
+        <svg viewBox="0 0 900 650" aria-hidden="true">
+          <circle cx="450" cy="325" r="70" fill="none" stroke="rgba(255,255,255,.2)"/>
+          <ellipse cx="450" cy="325" rx="220" ry="120" fill="none" stroke="rgba(255,255,255,.14)"/>
+          <ellipse cx="450" cy="325" rx="360" ry="220" fill="none" stroke="rgba(255,255,255,.1)"/>
+          <path class="route" d="M110 440 C250 380 290 250 450 325 S690 190 815 120"/>
+          <circle class="node" cx="110" cy="440" r="8"/>
+          <circle class="node" cx="450" cy="325" r="8"/>
+          <circle class="node" cx="815" cy="120" r="8"/>
+        </svg>
+      </div>`;
+  }
+
+  if (['migration', 'expansion', 'map', 'network'].includes(e.interactive)) {
+    return `
+      <div class="schematic">
+        <svg viewBox="0 0 900 650" aria-hidden="true">
+          <path d="M80 240l80-95 130-20 92 66-45 95-112 20-25 100-100-22zM390 166l112-82 155 35 65 65 112 37-20 100-105-6-75 83-130-25-76-90zM565 420l73-22 62 60-15 105-87 10-50-74z" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.15)"/>
+          <path class="route" d="M500 360 C465 310 440 270 475 235 S570 176 640 206 S735 258 795 208"/>
+          <path class="route" style="opacity:.55" d="M475 235 C390 205 310 190 235 225 S150 300 120 355"/>
+          <circle class="node" cx="475" cy="235" r="8"/>
+          <circle class="node" cx="795" cy="208" r="8"/>
+          <circle class="node" cx="120" cy="355" r="8"/>
+        </svg>
+      </div>`;
+  }
+
+  return `
+    <div class="schematic">
+      <svg viewBox="0 0 900 650" aria-hidden="true">
+        <circle cx="450" cy="325" r="165" fill="none" stroke="rgba(255,255,255,.12)"/>
+        <circle cx="450" cy="325" r="260" fill="none" stroke="rgba(255,255,255,.08)"/>
+        <path class="route" d="M210 430 C310 270 380 425 450 325 S610 230 710 365"/>
+        <circle class="node" cx="210" cy="430" r="8"/>
+        <circle class="node" cx="450" cy="325" r="8"/>
+        <circle class="node" cx="710" cy="365" r="8"/>
+      </svg>
+    </div>`;
+}
+
+function build() {
+  const related = e.related.map((relatedId) => exhibits.find((x) => x.id === relatedId)).filter(Boolean);
+  const archive = [
+    e,
+    ...related,
+    ...exhibits.filter((x) => x.sector === e.sector && x.id !== e.id && !e.related.includes(x.id)),
+  ].slice(0, 5);
+
+  document.body.innerHTML = nav() + `
+    <main>
+      <section class="exhibit-hero">
+        <div class="hero-image">
+          <img src="${e.image}" alt="${e.title}">
+          <a class="hero-credit" href="${e.source}" target="_blank" rel="noopener">Image: ${e.credit} · source ↗</a>
+        </div>
+        <div class="hero-content">
+          <div class="breadcrumbs">
+            <a href="${BASE}">Museum</a><i></i>
+            <a href="${BASE}sectors/${sec.id}/">${sec.name}</a><i></i>
+            <span>${e.title}</span>
+          </div>
+          <p class="kicker">${sec.name} · Dedicated gallery</p>
+          <h1>${e.title}</h1>
+          <p class="hero-deck">${e.intro}</p>
+          <div class="hero-meta">
+            <span><strong>${e.date}</strong> · Date</span>
+            <span><strong>${e.region}</strong> · Region</span>
+            <span><strong>${e.sections.length}</strong> · Story rooms</span>
+          </div>
+        </div>
+        <a class="hero-scroll" href="#overview">Enter exhibit ↓</a>
+      </section>
+
+      <div class="exhibit-body">
+        <section class="overview-grid" id="overview">
+          <div class="overview-copy">
+            <p class="eyebrow">Orientation</p>
+            <h2>Before you enter.</h2>
+            <p>${e.intro}</p>
+            <p>${e.sections[0][1]}</p>
+          </div>
+          <aside class="fact-rail">
+            ${e.facts.map(([a, b]) => `<div class="fact"><span>${a}</span><strong>${b}</strong></div>`).join('')}
+          </aside>
+        </section>
+
+        <section class="chapter-section">
+          <div class="section-head">
+            <div><p class="eyebrow">Deep dive</p><h2>The story in layers.</h2></div>
+            <p>Move through political systems, material life, technology, conflict, culture, and consequences rather than reducing this subject to a single date.</p>
+          </div>
+          <div class="chapter-grid">
+            ${e.sections.map((s, i) => `<article class="chapter"><span class="chapter-number">ROOM ${fmt(i)}</span><h3>${s[0]}</h3><p>${s[1]}</p></article>`).join('')}
+          </div>
+        </section>
+
+        <section class="interactive-stage">
+          <div class="interact-copy">
+            <p class="eyebrow">Interactive lens</p>
+            <h2>Change the way you look.</h2>
+            <p>Select a lens to pull one strand of the exhibit into focus. The graphic is interpretive and schematic—not a literal political map.</p>
+            <div class="lens-buttons">
+              ${e.sections.slice(0, 3).map((s, i) => `<button class="${i === 0 ? 'active' : ''}" data-lens="${i}">${fmt(i)} · ${s[0]}</button>`).join('')}
+            </div>
+          </div>
+          <div class="interact-canvas">
+            ${schematic()}
+            <article class="lens-panel" id="lensPanel"><span>Lens 01</span><h3>${e.sections[0][0]}</h3><p>${e.sections[0][1]}</p></article>
+          </div>
+        </section>
+
+        <section class="timeline-room">
+          <p class="kicker">Exhibit timeline</p>
+          <h2>Moments that change the room.</h2>
+          <div class="exhibit-timeline">
+            ${e.timeline.map((t, i) => `<button class="timeline-stop ${i === 0 ? 'active' : ''}" data-stop="${i}"><time>${t[0]}</time><h3>${t[1]}</h3><p>Open this marker for context.</p></button>`).join('')}
+          </div>
+          <div class="timeline-focus">
+            <strong id="timelineFocusDate">${e.timeline[0][0]}</strong>
+            <p id="timelineFocusText">${e.timeline[0][1]} — place this moment beside the larger story above rather than treating it as an isolated fact.</p>
+          </div>
+        </section>
+
+        <section class="visual-archive">
+          <div class="archive-head">
+            <div><p class="eyebrow">Visual archive</p><h2>Objects, places, evidence.</h2></div>
+            <p>Images lead into neighboring galleries and their source records. Open an image source for licensing and catalog information.</p>
+          </div>
+          <div class="archive-grid">
+            ${archive.map((a) => `<figure class="archive-item"><a href="${a.id === e.id ? a.source : link(a)}" ${a.id === e.id ? 'target="_blank" rel="noopener"' : ''}><img src="${a.image}" alt="${a.title}"><figcaption>${a.title} · ${a.credit}</figcaption></a></figure>`).join('')}
+          </div>
+        </section>
+
+        <section class="meanwhile">
+          <p class="kicker">Meanwhile in the world</p>
+          <h2>No civilization exists alone.</h2>
+          <div class="meanwhile-grid">
+            ${e.meanwhile.map((m, i) => `<article class="mean-card"><span>Elsewhere ${fmt(i)}</span><h3>${e.date}</h3><p>${m}</p></article>`).join('')}
+          </div>
+        </section>
+
+        <section class="connections">
+          <p class="kicker">Connected galleries</p>
+          <h2>Keep walking.</h2>
+          <div class="related-grid">
+            ${related.map((r) => `<a class="related-card" href="${link(r)}"><img src="${r.image}" alt="${r.title}"><div class="related-copy"><span>${sectors.find((s) => s.id === r.sector).name}</span><h3>${r.title}</h3></div></a>`).join('')}
+          </div>
+          <a class="back-wing" href="${BASE}sectors/${sec.id}/"><span>Return to museum wing</span><strong>${sec.name} →</strong></a>
+        </section>
+      </div>
+    </main>
+    <footer class="site-footer"><span>The History of the World · v1.1.2</span><a href="${BASE}">Museum home ↑</a></footer>`;
+
+  wire();
+}
+
+function wire() {
+  const panels = e.sections.slice(0, 3);
+
+  $$('[data-lens]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const i = Number(button.dataset.lens);
+      $$('[data-lens]').forEach((x) => x.classList.toggle('active', x === button));
+      $('#lensPanel').innerHTML = `<span>Lens ${fmt(i)}</span><h3>${panels[i][0]}</h3><p>${panels[i][1]}</p>`;
+    });
+  });
+
+  $$('[data-stop]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const i = Number(button.dataset.stop);
+      const t = e.timeline[i];
+      $$('[data-stop]').forEach((x) => x.classList.toggle('active', x === button));
+      $('#timelineFocusDate').textContent = t[0];
+      $('#timelineFocusText').textContent = `${t[1]} — this marker sits inside the larger forces explored in the gallery.`;
+    });
+  });
+
+  const range = $('#machineRange');
+  if (range) {
+    range.addEventListener('input', () => {
+      const i = Number(range.value);
+      const t = e.timeline[i];
+      $('#machineStage').textContent = t[1];
+      $('#machineText').textContent = `${t[0]} — ${e.sections[Math.min(i, e.sections.length - 1)][0]}.`;
+    });
+  }
+
+  $('#randomGallery')?.addEventListener('click', () => {
+    const random = exhibits[Math.floor(Math.random() * exhibits.length)];
+    location.href = link(random);
+  });
+
+  window.addEventListener('scroll', () => {
+    const y = scrollY;
+    const h = document.documentElement.scrollHeight - innerHeight;
+    const progress = $('#scrollProgress');
+    const museumNav = $('#museumNav');
+    if (progress) progress.style.width = `${h ? (y / h) * 100 : 0}%`;
+    if (museumNav) museumNav.classList.toggle('scrolled', y > 30);
+  }, { passive: true });
+}
+
+build();
