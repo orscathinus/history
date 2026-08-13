@@ -1,0 +1,35 @@
+name: Validate static museum
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          node --check data.js
+          node --check app.js
+          node --check exhibit.js
+          node --check sector.js
+      - name: Smoke-test exhibit bootstrap
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const context = { window: {} };
+          vm.createContext(context);
+          vm.runInContext(fs.readFileSync('data.js','utf8'), context, { filename: 'data.js' });
+          if (!context.window.HISTORY_DATA) throw new Error('HISTORY_DATA missing');
+          const { sectors, exhibits } = context.window.HISTORY_DATA;
+          if (!Array.isArray(sectors) || !Array.isArray(exhibits)) throw new Error('Museum data malformed');
+          if (!exhibits.find(x => x.id === 'roman-empire')) throw new Error('Roman Empire exhibit missing');
+          console.log(`Validated ${sectors.length} sectors and ${exhibits.length} exhibits.`);
+          NODE
